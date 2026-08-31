@@ -66,7 +66,7 @@ namespace caspian
             to.charge += e.weight;
 
             if(m_debug)
-                printf("[t=%3llu] Neuron %2d charge: %4d after accumulating %4d\n",net_time, to.id, to.charge, e.weight);
+                printf("[t=%3lu] Neuron %2d charge: %4d after accumulating %4d\n",net_time, to.id, to.charge, e.weight);
 
             // increment accumulations count
             metric_accumulates++;
@@ -90,7 +90,7 @@ namespace caspian
         e.neuron->charge += e.syn->weight;
 
         if(m_debug)
-            printf("[t=%3llu] Neuron %2d charge: %4d after accumulating %4d\n",net_time, e.neuron->id, e.neuron->charge, e.syn->weight);
+            printf("[t=%3lu] Neuron %2d charge: %4d after accumulating %4d\n",net_time, e.neuron->id, e.neuron->charge, e.syn->weight);
 
         // increment accumulations count
         metric_accumulates++;
@@ -118,7 +118,7 @@ namespace caspian
             metric_fires++;
 
             if(m_debug)
-                printf("[t=%4llu] > FIRE %3d charge: %6d",net_time, n->id, n->charge);
+                printf("[t=%4lu] > FIRE %3d charge: %6d",net_time, n->id, n->charge);
 
             // optionally, collect every spike
             if(collect_all) 
@@ -162,7 +162,7 @@ namespace caspian
                     int tag = (multi_net_sim) ? n->tag : 0;
                     output_logs[tag].add_fire(n->output_id, net_time - run_start_time, monitor_precise[n->output_id]);
                     if(m_debug)
-                        printf(" + output at %4llu",net_time - run_start_time);
+                        printf(" + output at %4lu",net_time - run_start_time);
                 }
             }
             
