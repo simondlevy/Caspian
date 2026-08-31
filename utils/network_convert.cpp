@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 
     if(argc != 2)
     {
-        printf("Usage: %s network_filename.json\n", argv[0])
+        printf("Usage: %s network_filename.json\n", argv[0]);
         //fmt::print("Usage: {} network_filename.json\n", argv[0]);
         return -1;
     }

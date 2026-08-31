@@ -46,7 +46,7 @@ PROJECT_DIR := $(dir $(MKFILE_PATH))
 # Compilation Flags
 CFLAGS ?= -Wall -Wextra -pipe -O3 -g
 CFLAGSBASE = $(CFLAGS) -std=c++14 -I$(INC) -I$(ROOT_INCLUDE)
-LFLAGS = -lpthread
+LFLAGS = -lpthread -lftdi1
 
 ifeq ($(VCASPIAN),true)
     CFLAGSBASE += -DWITH_VERILATOR

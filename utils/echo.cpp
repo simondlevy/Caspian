@@ -7,7 +7,7 @@
 #include <libftdi1/ftdi.h>
 
 
-int main(int argc, char **argv)
+int main()
 {
    struct ftdi_context *ftdi;
    int ret;
@@ -66,8 +66,7 @@ int main(int argc, char **argv)
    //}
 
    // purge USB buffers on FT chip
-   ftdi_usb_purge_buffers(ftdi);
-
+   ftdi_tcioflush(ftdi);
 
    std::string str = "Hello World";
    unsigned char buf_send[8192];

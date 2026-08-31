@@ -125,10 +125,10 @@ void run_test(Backend *sim, int w, int h, int runs, int runtime = 0, int ifires 
     printf("---[Metrics]------------------------\n");
     printf("Average Simulate (s)     : %9.7f\n", avg);
     printf("Median Simulate  (s)     : %9.7f\n", sim_times[sim_times.size()/2].count());
-    printf("Spikes                   : %llu\n", fires);
+    printf("Spikes                   : %lu\n", fires);
     printf("Spikes/second            : %lf\n", static_cast<double>(fires) / ttime);
-    printf("Output Spikes            : %llu\n", outputs);
-    printf("Accumulations            : %llu\n", accumulations);
+    printf("Output Spikes            : %lu\n", outputs);
+    printf("Accumulations            : %lu\n", accumulations);
     printf("Accumulations/second     : %.1f\n", static_cast<double>(accumulations) / ttime);
     printf("Effective Speed (KHz)    : %.4f\n", (static_cast<double>(runtime) / avg) / (1000) );
 
@@ -139,7 +139,7 @@ void run_test(Backend *sim, int w, int h, int runs, int runtime = 0, int ifires 
         //const double clk_speed = 150000000; // previously 25000000
         double adj_time = (static_cast<double>(active_cycles) / clk_speed) / static_cast<double>(runs);
         printf("---[FPGA Metrics]-------------------\n");
-        printf("Active Clock Cycles      : %llu\n", active_cycles);
+        printf("Active Clock Cycles      : %lu\n", active_cycles);
         printf("Adj Runtime (s)          : %9.7f\n", adj_time);
         printf("Adj Accumulations/second : %.1f\n", avg_accum / adj_time);
         printf("Adj Effective Speed (KHz): %.4f\n", (runtime / adj_time) / (1000) );
