@@ -140,7 +140,7 @@ namespace caspian
             //}
 
             // purge USB buffers on FT chip
-            ftdi_usb_purge_buffers(ftdi);
+            ftdi_tcioflush(ftdi);
         }
         else
         {
@@ -250,10 +250,10 @@ namespace caspian
                 incr = 5;
 
                 if(m_debug)
-                    printf(" > Time Update: %llu\n",t);
+                    printf(" > Time Update: %lu\n",t);
 
                 if(t - net_time > 255)
-                    printf("Corrupted time %llu -> %llu -- %d %d %d %d %d\n", net_time, t, buf[0], buf[1], buf[2], buf[3], buf[4], buf[5]);
+                    printf("Corrupted time %lu -> %lu -- %d %d %d %d %d %d\n", net_time, t, buf[0], buf[1], buf[2], buf[3], buf[4], buf[5]);
 
                 // update time
                 net_time = t;
@@ -271,7 +271,7 @@ namespace caspian
                 incr = 2;
 
                 if(m_debug)
-                    printf(" > Fire %d [t=%llu]\n", addr, net_time);
+                    printf(" > Fire %d [t=%lu]\n", addr, net_time);
 
                 if(!net->is_neuron(addr))
                 {
@@ -317,8 +317,8 @@ namespace caspian
         }
         else if(new_net->num_neurons() > 256 || new_net->num_synapses() > 4096)
         {
-            std::cerr << "Network is too large with " << to_string(new_net->num_neurons()) << 
-                " neurons and " << to_string(new_net->num_synapses()) << " synapses for the uCaspian device\n"; 
+            std::cerr << "Network is too large with " << std::to_string(new_net->num_neurons()) << 
+                " neurons and " << std::to_string(new_net->num_synapses()) << " synapses for the uCaspian device\n"; 
 
             net = nullptr;
             return false;
@@ -331,7 +331,7 @@ namespace caspian
             if(nid > 127)
             {
                 std::cerr << "Network input neurons must have an id <= 127 for uCaspian.\n"; 
-                std::cerr << "Input " << to_string(i) << " is neuron with id=" << to_string(nid) << std::endl;
+                std::cerr << "Input " << std::to_string(i) << " is neuron with id=" << std::to_string(nid) << std::endl;
                 net = nullptr;
                 return false;
             }
@@ -374,8 +374,8 @@ namespace caspian
 
         if(elms_prog > 0)
         {
-            std::cout << "Send config for " << to_string(elms_prog) << " elements with " 
-                << to_string(cfg_buf.size()) << " bytes\n";
+            std::cout << "Send config for " << std::to_string(elms_prog) << " elements with " 
+                << std::to_string(cfg_buf.size()) << " bytes\n";
             send_and_read(cfg_buf, [=](HardwareState *hw){ return hw->cfg_acks >= elms_prog; });
         }
 
@@ -433,7 +433,7 @@ namespace caspian
 
             make_input_fire(send_buf, f.id, f.weight);
             if(m_debug)
-                printf("[t=%3d] FIRE %3d:%3d\n", cur_time, f.id, f.weight)
+                printf("[t=%3lu] FIRE %3d:%3d\n", cur_time, f.id, f.weight);
         }
 
         if(cur_time < end_time)
@@ -466,7 +466,7 @@ namespace caspian
             processed_bytes.push_back(processed);
 
             if(hw->m_debug)
-                printf("[TIME: %llu] Processed %d bytes ", hw->net_time, processed)
+                printf("[TIME: %lu] Processed %d bytes ", hw->net_time, processed);
             
             if(processed == hw->rec_leftover.size())
             {
@@ -479,7 +479,7 @@ namespace caspian
             }
 
             if(hw->m_debug)
-                printf(" - %zu leftover\n", hw->rec_leftover.size())
+                printf(" - %zu leftover\n", hw->rec_leftover.size());
 
             if(processed_bytes.size() > max_zero_transfers)
             {
@@ -521,7 +521,7 @@ namespace caspian
         {
             int sz = std::min(int(buf.size()-boff), block);
             if(m_debug)
-                printf(" < Async write of %d bytes -- offset: %d -- total: %zu\n", sz, boff, buf.size())
+                printf(" < Async write of %d bytes -- offset: %d -- total: %zu\n", sz, boff, buf.size());
             sends.push_back(ftdi_write_data_submit(ftdi, &(buf[boff]), sz));
             boff += sz;
         }
