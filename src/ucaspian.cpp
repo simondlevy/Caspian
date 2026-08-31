@@ -171,7 +171,7 @@ namespace caspian
     {
         if(m_debug)
             printf("Enter parse_cmds -- buf size: %zu\n",buf.size());
-        int offset = 0;
+        size_t offset = 0;
 
         while(offset < buf.size())
         {
@@ -189,7 +189,7 @@ namespace caspian
     {
         if(m_debug)
             printf("Enter parse_cmds -- buf size: %zu\n",buf.size());
-        int offset = 0;
+        size_t offset = 0;
 
         while(offset < buf.size())
         {
@@ -462,11 +462,11 @@ namespace caspian
             std::vector<uint8_t> rec(cbuf, cbuf+bytes_read);
             hw->rec_leftover.insert(hw->rec_leftover.end(), rec.begin(), rec.end());
 
-            int processed = hw->parse_cmds_cond(hw->rec_leftover, cond);
+            const size_t processed = hw->parse_cmds_cond(hw->rec_leftover, cond);
             processed_bytes.push_back(processed);
 
             if(hw->m_debug)
-                printf("[TIME: %lu] Processed %d bytes ", hw->net_time, processed);
+                printf("[TIME: %lu] Processed %lu bytes ", hw->net_time, processed);
             
             if(processed == hw->rec_leftover.size())
             {
@@ -492,7 +492,7 @@ namespace caspian
                 if(processed_last == 0)
                 {
                     if(hw->m_debug)
-                        printf("Processed Bytes: %d\nExit due to 0 bytes processed recently.\n",processed);
+                        printf("Processed Bytes: %lu\nExit due to 0 bytes processed recently.\n",processed);
 
                     // Check FTDI modem status
                     unsigned short ftdi_status;
@@ -516,12 +516,12 @@ namespace caspian
         // while(buf.size() < 62) buf.push_back(0);
 
         const int block = 3961; // TODO: What should this be?
-        int boff = 0;
+        size_t boff = 0;
         while(boff < buf.size())
         {
             int sz = std::min(int(buf.size()-boff), block);
             if(m_debug)
-                printf(" < Async write of %d bytes -- offset: %d -- total: %zu\n", sz, boff, buf.size());
+                printf(" < Async write of %d bytes -- offset: %lu -- total: %zu\n", sz, boff, buf.size());
             sends.push_back(ftdi_write_data_submit(ftdi, &(buf[boff]), sz));
             boff += sz;
         }
