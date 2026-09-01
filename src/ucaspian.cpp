@@ -148,6 +148,8 @@ namespace caspian
         {
             ftdi = nullptr;
         }
+
+        set_debug(true);
     }
 
     UsbCaspian::~UsbCaspian()
@@ -311,6 +313,8 @@ namespace caspian
 
     bool UsbCaspian::configure(Network *new_net)
     {
+        printf("+++++++++++++++++++++++ configure()\n");
+
         std::vector<uint8_t> cfg_buf;
         int syn_cnt = 0;
 
@@ -394,8 +398,6 @@ namespace caspian
 
     bool UsbCaspian::simulate(uint64_t steps)
     {
-        printf("+++++++++++++++++++++++ simulate()\n");
-
         std::vector<uint8_t> send_buf;
         uint64_t end_time = hw_state->net_time + steps;
         uint64_t cur_time = hw_state->net_time;
@@ -417,6 +419,8 @@ namespace caspian
                 cur_time += step_size;
             } while(steps > 0);
         };
+
+        printf("+++++++++++++++++++++++ simulate()\n");
 
         // clear fire tracking information
         for(auto &m : hw_state->output_logs) m.clear();
@@ -442,13 +446,13 @@ namespace caspian
                 printf("[t=%3lu] FIRE %3d:%3d\n", cur_time, f.id, f.weight);
         }
 
+
         if(cur_time < end_time)
         {
             make_steps(end_time - cur_time);
         }
 
-        if(send_buf.size() > 0)
-        {
+        if(send_buf.size() > 0) {
             send_and_read(send_buf, [=](HardwareState *hw){ return hw->net_time >= end_time; });
         }
 
@@ -512,7 +516,8 @@ namespace caspian
         while(!cond(hw));
     }
 
-    void UsbCaspian::send_and_read(std::vector<uint8_t> &buf, std::function<bool(HardwareState*)> &&cond)
+    void UsbCaspian::send_and_read(
+            std::vector<uint8_t> &buf, std::function<bool(HardwareState*)> &&cond)
     {
         // Make a reader thread using the conditional function
         std::thread reader(read_fn, ftdi, hw_state.get(), cond);
@@ -521,12 +526,23 @@ namespace caspian
 
         const int block = 3961; // TODO: What should this be?
         size_t boff = 0;
-        while(boff < buf.size())
-        {
+
+        while (boff < buf.size()) {
+
             int sz = std::min(int(buf.size()-boff), block);
-            if(m_debug)
-                printf(" < Async write of %d bytes -- offset: %lu -- total: %zu\n", sz, boff, buf.size());
+
+            if (m_debug) {
+
+                printf(" < Async write of %d bytes -- offset: %lu -- total: %zu\n",
+                        sz, boff, buf.size());
+
+                for (int i=0; i<sz; ++i) {
+                    printf("  x%02X\n", buf[boff+i]);
+                }
+            }
+
             sends.push_back(ftdi_write_data_submit(ftdi, &(buf[boff]), sz));
+
             boff += sz;
         }
 
@@ -543,6 +559,8 @@ namespace caspian
 
     double UsbCaspian::get_metric(const std::string& metric)
     {
+        printf("+++++++++++++++++++++++ get_metric()\n");
+
         auto mit = metric_addrs.find(metric);
         if(mit == metric_addrs.end() || mit->second.empty())
         {
@@ -578,6 +596,8 @@ namespace caspian
 
     void UsbCaspian::reset()
     {
+        printf("+++++++++++++++++++++++ reset()\n");
+
         std::vector<uint8_t> send_buf;
         make_clear_activity(send_buf);
         hw_state->clr_acks = 0;
@@ -644,7 +664,6 @@ namespace caspian
         m_debug = debug;
         if(hw_state) hw_state->m_debug = debug;
     }
-
 
     void HardwareState::clear()
     {

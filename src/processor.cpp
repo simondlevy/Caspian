@@ -568,9 +568,10 @@ namespace caspian
     /* Clears the state of a network */
     void Processor::clear_activity(int network_id)
     {
-        check_is_loaded(network_id);
+        printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> clear_activity: dev=%p\n",
+                dev);
 
-        printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> clear_activity\n");
+        check_is_loaded(network_id);
 
         dev->clear_activity();
     }
@@ -624,6 +625,7 @@ namespace caspian
 
     void Processor::check_is_loaded(const int network_id)
     {
+        return;
         if(network_id > int(internal_nets.size())-1)
             throw std::runtime_error("[apply] Specified network " +
                     std::to_string(network_id) + " is not loaded");
