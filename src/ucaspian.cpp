@@ -492,7 +492,7 @@ namespace caspian
             processed_bytes.push_back(processed);
 
             if(hw->m_debug) {
-                printf("[TIME: %lu] Processed %lu bytes: [",
+                printf("[TIME: %lu] Processed %lu bytes: [ ",
                         hw->net_time, processed);
                 for (int i=0; i<bytes_read; ++i) {
                     printf("x%02X ", cbuf[i]);
