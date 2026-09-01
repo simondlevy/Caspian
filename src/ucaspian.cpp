@@ -425,15 +425,15 @@ namespace caspian
         hw_state->run_start_time = hw_state->net_time;
         exp_end_time = end_time;
 
-        auto make_steps = [&](int steps){
+        auto make_steps = [&](int steps) {
             int step_size = 0;
-            do
-            {
+            do {
                 step_size = (steps > 255) ? 255 : steps;
                 steps -= step_size;
 
-                if(m_debug)
+                if(m_debug) {
                     printf(" > STEP %d\n",step_size);
+                }
 
                 make_step(send_buf, step_size);
                 cur_time += step_size;
@@ -450,18 +450,30 @@ namespace caspian
         for(auto &&f : input_fires)
         {
             // check if fire is within current time window
-            if(f.time < cur_time || f.time > end_time)
-            {
+            if(f.time < cur_time || f.time > end_time) {
                 continue;
             }
-            else if(f.time > cur_time)
-            {
-                make_steps(f.time - cur_time);
+            else if(f.time > cur_time) {
+                int steps = f.time - cur_time;
+                // make_steps(steps);
+                int step_size = 0;
+                do {
+                    step_size = (steps > 255) ? 255 : steps;
+                    steps -= step_size;
+
+                    if(m_debug) {
+                        printf(" > STEP %d\n",step_size);
+                    }
+
+                    make_step(send_buf, step_size);
+                    cur_time += step_size;
+                } while(steps > 0);
             }
 
             make_input_fire(send_buf, f.id, f.weight);
-            if(m_debug)
+            if(m_debug) {
                 printf("[t=%3lu] FIRE %3d:%3d\n", cur_time, f.id, f.weight);
+            }
         }
 
 
@@ -496,7 +508,7 @@ namespace caspian
 
             if(hw->m_debug)
                 printf("[TIME: %lu] Processed %lu bytes ", hw->net_time, processed);
-            
+
             if(processed == hw->rec_leftover.size())
             {
                 hw->rec_leftover.clear();
