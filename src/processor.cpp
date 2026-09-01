@@ -284,7 +284,8 @@ namespace caspian
         } else {
             int_val = s.value;
             if (int_val < 0 || int_val > caspian::constants::MAX_DEVICE_INPUT)
-                throw std::runtime_error("[apply] Bad spike value: " + std::to_string(s.value) + ": integer part must be >= 0 and <= " 
+                throw std::runtime_error("[apply] Bad spike value: " +
+                        std::to_string(s.value) + ": integer part must be >= 0 and <= " 
                     + std::to_string(caspian::constants::MAX_DEVICE_INPUT));
         }
 
@@ -568,9 +569,8 @@ namespace caspian
     void Processor::clear_activity(int network_id)
     {
         check_is_loaded(network_id);
-        // TODO: network_id
 
-        printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> track_output_events\n");
+        printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> clear_activity\n");
 
         dev->clear_activity();
     }
