@@ -325,8 +325,10 @@ namespace caspian
         }
         else if(new_net->num_neurons() > 256 || new_net->num_synapses() > 4096)
         {
-            std::cerr << "Network is too large with " << std::to_string(new_net->num_neurons()) << 
-                " neurons and " << std::to_string(new_net->num_synapses()) << " synapses for the uCaspian device\n"; 
+            std::cerr << "Network is too large with " <<
+                std::to_string(new_net->num_neurons()) << 
+                " neurons and " << std::to_string(new_net->num_synapses()) <<
+                " synapses for the uCaspian device\n"; 
 
             net = nullptr;
             return false;
@@ -339,7 +341,8 @@ namespace caspian
             if(nid > 127)
             {
                 std::cerr << "Network input neurons must have an id <= 127 for uCaspian.\n"; 
-                std::cerr << "Input " << std::to_string(i) << " is neuron with id=" << std::to_string(nid) << std::endl;
+                std::cerr << "Input " << std::to_string(i) << " is neuron with id="
+                    << std::to_string(nid) << std::endl;
                 net = nullptr;
                 return false;
             }
@@ -368,7 +371,8 @@ namespace caspian
             int n_syn_start = syn_cnt;
             int n_syn_cnt = n->outputs.size();
             bool output_en = (n->output_id >= 0);
-            make_cfg_neuron(cfg_buf, n->id, n->threshold, n->delay, n->leak, output_en, n_syn_start, n_syn_cnt);
+            make_cfg_neuron(cfg_buf, n->id, n->threshold, n->delay, n->leak,
+                    output_en, n_syn_start, n_syn_cnt);
             elms_prog++;
 
             // add synapses
@@ -459,7 +463,8 @@ namespace caspian
         return true;
     }
 
-    inline void read_fn(struct ftdi_context *ftdi, HardwareState *hw, std::function<bool(HardwareState*)> cond)
+    inline void read_fn(struct ftdi_context *ftdi, HardwareState *hw,
+            std::function<bool(HardwareState*)> cond)
     {
         std::vector<int> processed_bytes;
         const int max_zero_transfers = 10;
@@ -484,7 +489,8 @@ namespace caspian
             }
             else
             {
-                std::vector<uint8_t> new_leftover(hw->rec_leftover.begin()+processed, hw->rec_leftover.end());
+                std::vector<uint8_t> new_leftover(hw->rec_leftover.begin()+processed,
+                        hw->rec_leftover.end());
                 hw->rec_leftover = std::move(new_leftover);
             }
 
@@ -501,9 +507,10 @@ namespace caspian
 
                 if(processed_last == 0)
                 {
-                    if(hw->m_debug)
-                        printf("Processed Bytes: %lu\nExit due to 0 bytes processed recently.\n",processed);
-
+                    if(hw->m_debug) {
+                        printf("Processed Bytes: %lu\nExit due to 0 bytes processed "
+                                "recently.\n", processed);
+                    }
                     // Check FTDI modem status
                     unsigned short ftdi_status;
                     ftdi_poll_modem_status(ftdi, &ftdi_status);
@@ -577,7 +584,9 @@ namespace caspian
             make_get_metric(buf, *addr);
         }
 
-        send_and_read(buf, [=](HardwareState *hw){ return hw->rec_metrics.size() >= metric_bytes; });
+        send_and_read(buf, [=](HardwareState *hw) {
+                return hw->rec_metrics.size() >= metric_bytes; 
+                });
 
         int64_t val = 0;
 
@@ -709,9 +718,12 @@ namespace caspian
         output_logs.emplace_back(net->num_outputs());
         rec_leftover.clear();
 
-        if(m_debug)
-            printf("[configure] outputs: %zu monitor_aftertime: %zu monitor_precise: %zu output_logs %zu\n",
-                net->num_outputs(),monitor_aftertime.size(), monitor_precise.size(), output_logs.size());
+        if(m_debug) {
+            printf("[configure] outputs: %zu monitor_aftertime: %zu "
+                    "monitor_precise: %zu output_logs %zu\n",
+                net->num_outputs(),monitor_aftertime.size(),
+                monitor_precise.size(), output_logs.size());
+        }
 
         net_time = 0;
         cfg_acks = 0;
