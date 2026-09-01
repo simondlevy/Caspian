@@ -400,8 +400,24 @@ namespace caspian
         return false;
     }
 
+    void UsbCaspian::clear_activity()
+    {
+        printf("+++++++++++++++++++++++ clear_activity()\n");
+
+        std::vector<uint8_t> send_buf;
+        make_clear_activity(send_buf);
+        hw_state->clr_acks = 0;
+
+        send_and_read(send_buf, [](HardwareState *hw){ return hw->clr_acks > 0; });
+
+        hw_state->clear();
+        input_fires.clear();
+    }
+
     bool UsbCaspian::simulate(uint64_t steps)
     {
+        printf("+++++++++++++++++++++++ simulate()\n");
+
         std::vector<uint8_t> send_buf;
         uint64_t end_time = hw_state->net_time + steps;
         uint64_t cur_time = hw_state->net_time;
@@ -423,8 +439,6 @@ namespace caspian
                 cur_time += step_size;
             } while(steps > 0);
         };
-
-        printf("+++++++++++++++++++++++ simulate()\n");
 
         // clear fire tracking information
         for(auto &m : hw_state->output_logs) m.clear();
@@ -614,20 +628,6 @@ namespace caspian
         send_and_read(send_buf, [](HardwareState *hw){ return hw->clr_acks > 0; });
         
         hw_state->clear_all();
-        input_fires.clear();
-    }
-
-    void UsbCaspian::clear_activity()
-    {
-        printf("+++++++++++++++++++++++ clear_activity()\n");
-
-        std::vector<uint8_t> send_buf;
-        make_clear_activity(send_buf);
-        hw_state->clr_acks = 0;
-
-        send_and_read(send_buf, [](HardwareState *hw){ return hw->clr_acks > 0; });
-
-        hw_state->clear();
         input_fires.clear();
     }
 
