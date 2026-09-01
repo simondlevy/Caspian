@@ -73,6 +73,8 @@ namespace caspian
 
     UsbCaspian::UsbCaspian(bool debug, std::string device)
     {
+        printf("+++++++++++++++++++++++ UsbCaspian()\n");
+
         int ret;
 
         // Set up hardware state
@@ -302,6 +304,8 @@ namespace caspian
 
     void UsbCaspian::apply_input(int input_id, int16_t w, uint64_t t)
     {
+        printf("+++++++++++++++++++++++ apply_input()\n");
+
         input_fires.emplace_back(net->get_input(input_id), w, hw_state->net_time + t);
     }
 
@@ -390,6 +394,8 @@ namespace caspian
 
     bool UsbCaspian::simulate(uint64_t steps)
     {
+        printf("+++++++++++++++++++++++ simulate()\n");
+
         std::vector<uint8_t> send_buf;
         uint64_t end_time = hw_state->net_time + steps;
         uint64_t cur_time = hw_state->net_time;
@@ -513,8 +519,6 @@ namespace caspian
 
         std::vector<struct ftdi_transfer_control*> sends;
 
-        // while(buf.size() < 62) buf.push_back(0);
-
         const int block = 3961; // TODO: What should this be?
         size_t boff = 0;
         while(boff < buf.size())
@@ -586,6 +590,8 @@ namespace caspian
 
     void UsbCaspian::clear_activity()
     {
+        printf("+++++++++++++++++++++++ clear_activity()\n");
+
         std::vector<uint8_t> send_buf;
         make_clear_activity(send_buf);
         hw_state->clr_acks = 0;
@@ -609,6 +615,7 @@ namespace caspian
 
     bool UsbCaspian::track_timing(uint32_t output_id, bool do_tracking)
     {
+        printf("+++++++++++++++++++++++ track_timing()\n");
         return hw_state->track_timing(output_id, do_tracking);
     }
 

@@ -273,8 +273,9 @@ namespace caspian
                                 bool normalized,
                                 int network_id)
     {
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[apply] Specified network " + std::to_string(network_id) + " is not loaded");
+        check_is_loaded(network_id);
+
+        printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> apply_spike\n");
 
         int16_t int_val;
 
@@ -320,8 +321,9 @@ namespace caspian
 
     void Processor::run(double duration, int network_id)
     {
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[run] Specified network " + std::to_string(network_id) + " is not loaded");
+        check_is_loaded(network_id);
+
+        printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> run\n");
 
         dev->simulate(duration);
     }
@@ -335,16 +337,14 @@ namespace caspian
 
     double Processor::get_time(int network_id)
     {
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[get_time] Specified network " + std::to_string(network_id) + " is not loaded");
+        check_is_loaded(network_id);
 
         return dev->get_time();
     }
 
     void Processor::track_aftertime(int output_id, double aftertime, int network_id)
     {
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
 
         // time conversion
         uint64_t atime = aftertime;
@@ -354,8 +354,7 @@ namespace caspian
 
     void Processor::track_output(int output_id, bool track, int network_id)
     {
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
 
         dev->track_timing(output_id, track);
     }
@@ -363,8 +362,9 @@ namespace caspian
     // NOTE: Added by Katie
     bool Processor::track_output_events(int output_id, bool track, int network_id)
     {
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
+
+        printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> track_output_events\n");
 
         dev->track_timing(output_id, track);
         return true;
@@ -374,31 +374,29 @@ namespace caspian
     bool Processor::track_neuron_events(uint32_t node_id, bool track, int network_id) {
         (void) track;
         (void) node_id;
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
         dev->collect_all_spikes();
         return true;
     }
 
     double Processor::output_last_fire(int output_id, int network_id)
     {
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
 
         return static_cast<double>(dev->get_last_output_time(output_id, network_id));
     }
 
     int Processor::output_count(int output_id, int network_id)
     {
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
         return dev->get_output_count(output_id, network_id);
     }
 
     vector<double> Processor::output_vector(int output_id, int network_id)
     {
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
+
+        printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> output_vector\n");
 
         std::vector<uint32_t> i_times = dev->get_output_values(output_id, network_id);
         return std::vector<double>(i_times.begin(), i_times.end());
@@ -409,8 +407,7 @@ namespace caspian
     vector <double> Processor::output_last_fires(int network_id) {
         int i;
         vector <double> times;
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
         for (i = 0; i < api_nets[network_id]->num_outputs(); i++) {
             times.push_back(static_cast<double>(dev->get_last_output_time(i, network_id)));
         }
@@ -421,8 +418,7 @@ namespace caspian
     vector <int> Processor::output_counts(int network_id) {
         int i;
         vector <int> counts;
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
         for (i = 0; i < api_nets[network_id]->num_outputs(); i++) {
             counts.push_back(dev->get_output_count(i, network_id));
         }
@@ -435,8 +431,7 @@ namespace caspian
         int i;
         vector <vector <double> > ret;
         vector <double> x;
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
         for (i = 0; i < api_nets[network_id]->num_outputs(); i++) {
             x = output_vector(i, network_id);
             ret.push_back(x);
@@ -446,8 +441,7 @@ namespace caspian
 
     // NOTE: Added by Katie
     vector <int> Processor::neuron_counts(int network_id) {
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
         auto sp_cnts = dev->get_all_spike_cnts();
         std::map <int, int> id_to_index;
         int i;
@@ -474,8 +468,7 @@ namespace caspian
         api_nets[network_id]->make_sorted_node_vector();
         auto snv = api_nets[network_id]->sorted_node_vector;
 
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
         all_spikes = dev->get_all_spikes();
         last_times.resize(snv.size(), -1);
         for (i = 0; i < (int)all_spikes.size(); i++) {
@@ -493,9 +486,8 @@ namespace caspian
         int i, j;
         api_nets[network_id]->make_sorted_node_vector();
         auto snv = api_nets[network_id]->sorted_node_vector;
+        check_is_loaded(network_id);
 
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
         all_spikes = dev->get_all_spikes();
         ret_all_spikes.resize(snv.size());
         for (i = 0; i < (int)all_spikes.size(); i++) {
@@ -514,8 +506,8 @@ namespace caspian
         api_nets[network_id]->make_sorted_node_vector();
         auto snv = api_nets[network_id]->sorted_node_vector;
 
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
+
         for (i = 0; i < snv.size(); i++) {
           n = internal_nets[network_id]->get_neuron_ptr(snv[i]->id);
           if (n == NULL) {
@@ -531,24 +523,21 @@ namespace caspian
 
     // NOTE: Added by Aaron to match API. Currently not implemented.
     long long Processor::total_neuron_counts(int network_id) {
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
         return -1;
     }
 
     // NOTE: Added by Aaron to match API. Currently not implemented.
     long long Processor::total_neuron_accumulates(int network_id) {
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[output] Specified network " + std::to_string(network_id) + "is not loaded"); 
+        check_is_loaded(network_id);
         return -1;
     }
 
     /* Removes the network */
     void Processor::clear(int network_id)
     {
+        check_is_loaded(network_id);
         // TODO: network_id
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[clear] Specified network " + std::to_string(network_id) + " is not loaded");
 
         api_nets.clear();
 
@@ -578,9 +567,10 @@ namespace caspian
     /* Clears the state of a network */
     void Processor::clear_activity(int network_id)
     {
+        check_is_loaded(network_id);
         // TODO: network_id
-        if(network_id > int(internal_nets.size())-1)
-            throw std::runtime_error("[clear_activity] Specified network " + std::to_string(network_id) + " is not loaded");
+
+        printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> track_output_events\n");
 
         dev->clear_activity();
     }
@@ -630,6 +620,13 @@ namespace caspian
         // TODO
         data["Event Raster"] = nlohmann::json::array();
         data["Neuron Alias"] = nlohmann::json::array();
+    }
+
+    void Processor::check_is_loaded(const int network_id)
+    {
+        if(network_id > int(internal_nets.size())-1)
+            throw std::runtime_error("[apply] Specified network " +
+                    std::to_string(network_id) + " is not loaded");
     }
 
 }

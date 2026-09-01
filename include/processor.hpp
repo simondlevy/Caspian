@@ -110,6 +110,8 @@ namespace caspian
         bool multi_net_sim = false;
         vector<neuro::Network*> api_nets;
         vector<caspian::Network*> internal_nets;
+
+        void check_is_loaded(const int network_id);
     };
 
 }
