@@ -454,20 +454,7 @@ namespace caspian
                 continue;
             }
             else if(f.time > cur_time) {
-                int steps = f.time - cur_time;
-                // make_steps(steps);
-                int step_size = 0;
-                do {
-                    step_size = (steps > 255) ? 255 : steps;
-                    steps -= step_size;
-
-                    if(m_debug) {
-                        printf(" > STEP %d\n",step_size);
-                    }
-
-                    make_step(send_buf, step_size);
-                    cur_time += step_size;
-                } while(steps > 0);
+                make_steps(f.time - cur_time);
             }
 
             make_input_fire(send_buf, f.id, f.weight);
@@ -476,9 +463,7 @@ namespace caspian
             }
         }
 
-
-        if(cur_time < end_time)
-        {
+        if(cur_time < end_time) {
             make_steps(end_time - cur_time);
         }
 
@@ -506,8 +491,15 @@ namespace caspian
             const size_t processed = hw->parse_cmds_cond(hw->rec_leftover, cond);
             processed_bytes.push_back(processed);
 
-            if(hw->m_debug)
-                printf("[TIME: %lu] Processed %lu bytes ", hw->net_time, processed);
+            if(hw->m_debug) {
+                printf("[TIME: %lu] Processed %lu bytes: [",
+                        hw->net_time, processed);
+                for (int i=0; i<bytes_read; ++i) {
+                    printf("x%02X ", cbuf[i]);
+                }
+
+                printf("] ");
+            }
 
             if(processed == hw->rec_leftover.size())
             {
@@ -583,7 +575,9 @@ namespace caspian
         reader.join();
 
         // close out the transmit requests
-        for(size_t i = 0; i < sends.size(); i++) ftdi_transfer_data_done(sends[i]);
+        for (size_t i = 0; i < sends.size(); i++) {
+            ftdi_transfer_data_done(sends[i]);
+        }
     }
 
     uint64_t UsbCaspian::get_time() const
