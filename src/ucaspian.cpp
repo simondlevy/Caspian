@@ -558,7 +558,8 @@ namespace caspian
                         sz, boff, buf.size());
 
                 for (int i=0; i<sz; ++i) {
-                    printf("  x%02X\n", buf[boff+i]);
+                    const auto byte = buf[boff+i];
+                    printf("  x%02X = %d\n", byte, byte); 
                 }
             }
 
